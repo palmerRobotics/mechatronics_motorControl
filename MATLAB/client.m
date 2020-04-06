@@ -117,10 +117,7 @@ while ~has_quit
                     valid = false;
                 end
                 t = n(i,1);
-                %i = i + 1;
             end
-            
-            
             if valid
                 fprintf('Plotting the desired trajectory and sending to the PIC32... ');
                 ref = genRef(n,'step');
@@ -135,7 +132,28 @@ while ~has_quit
                 fprintf('Error: Maximum trajectory time is 10 seconds.\n');
             end
         case 'n'
-            %verify case m works then copy and adjust
+            n = input('Enter step trajectory as an nx2 array, in seconds and degrees [time1, ang1; time2, ang2; ...]: ');
+            t = 0;
+            valid = true;
+            for i = 1:size(n,1)
+                if n(i,1) < t || n(i,1) > 10
+                    valid = false;
+                end
+                t = n(i,1);
+            end
+            if valid
+                fprintf('Plotting the desired trajectory and sending to the PIC32... ');
+                ref = genRef(n,'cubic');
+                fprintf(mySerial,'%d',ref);%!!!probably not %d format %!!!Also need to know max buffer size for PIC32
+                n = scanf(mySerial,'%d');
+                if n == 1
+                    fprintf('completed.\n');
+                else
+                    fprintf('Error during transmission.\n');
+                end
+            else
+                fprintf('Error: Maximum trajectory time is 10 seconds.\n');
+            end
         case 'o'
             %do nothing. PIC will do computations. should probably remove
             %case statement

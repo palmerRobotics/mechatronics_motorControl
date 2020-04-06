@@ -1,5 +1,5 @@
 #include "NU32.h"          // config bits, constants, funcs for startup and UART
-// include other header files here
+#include "currentSense.h" // include other header files here
 
 #define BUF_SIZE 200
 
@@ -22,6 +22,7 @@ int main()
       {
         //read analog input pin and return value
         //function call to current sensing module: analog read
+        int count = getCount();
         int n = 1023;
         sprintf(buffer,"%d",n);
         NU32_WriteUART3(buffer);
@@ -114,7 +115,7 @@ int main()
       case 'm':
       {
         //load step trajectory
-        //function call to position control module: follow trajectory
+        //function call to position control module: load trajectory
         int n = 1;
         sprintf(buffer,"%d",n);
         NU32_WriteUART3(buffer);
@@ -122,14 +123,23 @@ int main()
       }
       case 'n':
       {
+        //load cubic trajectory
+        //function call to position control module: load trajectory
+        int n = 1;
+        sprintf(buffer,"%d",n);
+        NU32_WriteUART3(buffer);
         break;
       }
       case 'o':
       {
+        //execute trajectory
+        //function call to position control module: execute trajectory
         break;
       }
       case 'p':
       {
+        //set PIC to IDLE mode
+        //function call to utilities module
         break;
       }
       case 'q':
@@ -139,6 +149,8 @@ int main()
       }
       case 'r':
       {
+        //get current operating mode
+        //function call to utilities module: get_mode()
         break;
       }
             case 'x': // dummy command for demonstration purposes

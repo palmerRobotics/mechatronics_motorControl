@@ -22,6 +22,9 @@ int main()
       {
         //read analog input pin and return value
         //function call to current sensing module: analog read
+        int n = 1023;
+        sprintf(buffer,"%d",n);
+        NU32_WriteUART3(buffer);
         break;
       }
       case 'b':
@@ -29,12 +32,18 @@ int main()
         //read analog input pin and return value
         //function call to current sensing module: analog read
         //function call to current sensing module: convert counts to mA
+        int n = 100;
+        sprintf(buffer,"%d",n);
+        NU32_WriteUART3(buffer);
         break;
       }
       case 'c':
       {
         //read encoder counts and return value
         //function call to encoder module: read counts
+        int n = 1023;
+        sprintf(buffer,"%d",n);
+        NU32_WriteUART3(buffer);
         break;
       }
       case 'd':
@@ -42,6 +51,9 @@ int main()
         //read encoder counts and return value
         //function call to encoder module: read counts
         //function call to encoder module: covert counts to deg
+        int n = 360;
+        sprintf(buffer,"%d",n);
+        NU32_WriteUART3(buffer);
         break;
       }
       case 'e':
@@ -58,31 +70,54 @@ int main()
       }
       case 'g':
       {
-        
+        //set current gains
+        //function call to current control module: set current gains
         break;
       }
       case 'h':
       {
+        //get current gains
+        //function call to current control module: get current gains
+        char gains[BUF_SIZE] = {'1 2'};
+        sprintf(buffer,"%s", gains);
+        NU32_WriteUART3(buffer);
         break;
       }
       case 'i':
       {
+        //set position gains
+        //function call to position control module: set position gains
         break;
       }
       case 'j':
       {
+        //get position gains
+        //function call to position control module: get position gains
+        char gains[BUF_SIZE] = {'1 2 3'};
+        sprintf(buffer,"%s", gains);
+        NU32_WriteUART3(buffer);
+        break;
         break;
       }
       case 'k':
       {
+        //test current controller
+        //function call to current control module: test current controller
         break;
       }
       case 'l':
       {
+        //go to angle
+        //function call to position control module: go to angle
         break;
       }
       case 'm':
       {
+        //load step trajectory
+        //function call to position control module: follow trajectory
+        int n = 1;
+        sprintf(buffer,"%d",n);
+        NU32_WriteUART3(buffer);
         break;
       }
       case 'n':

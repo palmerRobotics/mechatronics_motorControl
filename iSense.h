@@ -1,8 +1,8 @@
-#ifndef CURRENTSENSE__H__
-#define CURRENTSENSE__H__
+#ifndef ISENSE__H__
+#define ISENSE__H__
 
 void init();
-int getCount();
-int getCurrent();
+int getADCcount();
+int getADCcurrent();
 
 #endif

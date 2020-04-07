@@ -1,5 +1,9 @@
 #include "NU32.h"          // config bits, constants, funcs for startup and UART
-#include "currentSense.h" // include other header files here
+#include "iSense.h" // include other header files here
+#include "currentControl.h"
+#include "positionControl.h"
+#include "encoder.h"
+#include "utilities.h"
 
 #define BUF_SIZE 200
 
@@ -8,7 +12,7 @@ int main()
   char buffer[BUF_SIZE];
   NU32_Startup(); // cache on, min flash wait, interrupts on, LED/button init, UART init
   NU32_LED1 = 1;  // turn off the LEDs
-  NU32_LED2 = 1;        
+  NU32_LED2 = 1;
   __builtin_disable_interrupts();
   // in future, initialize modules or peripherals here
   __builtin_enable_interrupts();
@@ -20,21 +24,15 @@ int main()
     switch (buffer[0]) {
       case 'a':
       {
-        //read analog input pin and return value
-        //function call to current sensing module: analog read
         int count = getCount();
-        int n = 1023;
-        sprintf(buffer,"%d",n);
+        sprintf(buffer,"%d\r\n",count);
         NU32_WriteUART3(buffer);
         break;
       }
       case 'b':
       {
-        //read analog input pin and return value
-        //function call to current sensing module: analog read
-        //function call to current sensing module: convert counts to mA
-        int n = 100;
-        sprintf(buffer,"%d",n);
+        int mA = getADCcurrent();
+        sprintf(buffer,"%d\r\n",mA);
         NU32_WriteUART3(buffer);
         break;
       }
@@ -43,7 +41,7 @@ int main()
         //read encoder counts and return value
         //function call to encoder module: read counts
         int n = 1023;
-        sprintf(buffer,"%d",n);
+        sprintf(buffer,"%d\r\n",n);
         NU32_WriteUART3(buffer);
         break;
       }
@@ -53,7 +51,7 @@ int main()
         //function call to encoder module: read counts
         //function call to encoder module: covert counts to deg
         int n = 360;
-        sprintf(buffer,"%d",n);
+        sprintf(buffer,"%d\r\n",n);
         NU32_WriteUART3(buffer);
         break;
       }
@@ -72,15 +70,18 @@ int main()
       case 'g':
       {
         //set current gains
-        //function call to current control module: set current gains
+        currentGains gains;
+        NU32_ReadUART3(buffer,BUF_SIZE);
+        sscanf(buffer, "%d %d", &gains.kp, &gains.ki); //expects gains to come in a single buffer, separated by a space
+        setCurrentGains(gains);
         break;
       }
       case 'h':
       {
         //get current gains
         //function call to current control module: get current gains
-        char gains[BUF_SIZE] = {'1 2'};
-        sprintf(buffer,"%s", gains);
+        currentGains gains = getCurrentGains();
+        sprintf(buffer,"%f %f\r\n", gains.kp, gains.ki);
         NU32_WriteUART3(buffer);
         break;
       }
@@ -95,7 +96,7 @@ int main()
         //get position gains
         //function call to position control module: get position gains
         char gains[BUF_SIZE] = {'1 2 3'};
-        sprintf(buffer,"%s", gains);
+        sprintf(buffer,"%s\r\n", gains);
         NU32_WriteUART3(buffer);
         break;
         break;
@@ -117,7 +118,7 @@ int main()
         //load step trajectory
         //function call to position control module: load trajectory
         int n = 1;
-        sprintf(buffer,"%d",n);
+        sprintf(buffer,"%d\r\n",n);
         NU32_WriteUART3(buffer);
         break;
       }
@@ -126,7 +127,7 @@ int main()
         //load cubic trajectory
         //function call to position control module: load trajectory
         int n = 1;
-        sprintf(buffer,"%d",n);
+        sprintf(buffer,"%d\r\n",n);
         NU32_WriteUART3(buffer);
         break;
       }

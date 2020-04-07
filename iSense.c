@@ -1,21 +1,21 @@
-#include "currentSense.h"
+#include "iSense.h"
 
 #define AMPS_PER_COUNT (3.3/1024) //!! is this correct?
 #define A_TO_MA 1000
 
 void init(){
-    
+    //initialize ADC
 }
 
-int getCount(){
-    int count = 0;
+int getADCcount(){
+    int count = 1023;
     //get value from ADC, write to count
     return count;
 }
 
-int getCurrent(){
+int getADCcurrent(){
     int count = getCount();
-    int current = countToMA(count);
+    return countToMA(count);
 }
 
 int countToMA(int count){

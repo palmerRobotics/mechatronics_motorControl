@@ -1,11 +1,15 @@
 #include "NU32.h"          // config bits, constants, funcs for startup and UART
+#include "stdio.h"
+#include "math.h"
 #include "iSense.h" // include other header files here
 #include "currentControl.h"
 #include "positionControl.h"
 #include "encoder.h"
 #include "utilities.h"
+#include "fir.h"
 
 #define BUF_SIZE 200
+#define NUM_SAMPLES 1000
 
 int main() 
 {
@@ -22,16 +26,16 @@ int main()
     NU32_ReadUART3(buffer,BUF_SIZE); // we expect the next character to be a menu command
     NU32_LED2 = 1;                   // clear the error LED
     switch (buffer[0]) {
-      case 'a':
+      case 'a': //get ADC count
       {
-        int count = getCount();
+        int count = getADCcount();
         sprintf(buffer,"%d\r\n",count);
         NU32_WriteUART3(buffer);
         break;
       }
-      case 'b':
+      case 'b': //get current in mA
       {
-        int mA = getADCcurrent();
+        int mA = getCurrentmAmps();
         sprintf(buffer,"%d\r\n",mA);
         NU32_WriteUART3(buffer);
         break;
@@ -56,9 +60,10 @@ int main()
         break;
       }
       case 'e':
+      {
         //set theta=0 to the encoder's current count
         //function call to encoder module: reset encoder
-      {
+        resetEncoder();
         break;
       }
       case 'f':
@@ -67,49 +72,43 @@ int main()
         //function call to current control module: set fixed PWM
         break;
       }
-      case 'g':
+      case 'g': //set current gains
       {
-        //set current gains
         currentGains gains;
         NU32_ReadUART3(buffer,BUF_SIZE);
-        sscanf(buffer, "%d %d", &gains.kp, &gains.ki); //expects gains to come in a single buffer, separated by a space
+        sscanf(buffer, "%f %f", &gains.kp, &gains.ki);
         setCurrentGains(gains);
         break;
       }
-      case 'h':
+      case 'h': //get current gains
       {
-        //get current gains
-        //function call to current control module: get current gains
         currentGains gains = getCurrentGains();
         sprintf(buffer,"%f %f\r\n", gains.kp, gains.ki);
         NU32_WriteUART3(buffer);
         break;
       }
-      case 'i':
+      case 'i': //set position gains
       {
-        //set position gains
-        //function call to position control module: set position gains
+        positionGains gains;
+        NU32_ReadUART3(buffer, BUF_SIZE);
+        sscanf(buffer, "%f %f %f", &gains.kp, &gains.ki, &gains.kd);
+        setPositionGains(gains);
         break;
       }
-      case 'j':
+      case 'j': //get position gains
       {
-        //get position gains
-        //function call to position control module: get position gains
-        char gains[BUF_SIZE] = {'1 2 3'};
-        sprintf(buffer,"%s\r\n", gains);
+        positionGains gains = getPositionGains();
+        sprintf(buffer,"%f %f %f\r\n", gains.kp, gains.ki, gains.kd);
         NU32_WriteUART3(buffer);
         break;
-        break;
       }
-      case 'k':
+      case 'k': //test current controller
       {
-        //test current controller
         //function call to current control module: test current controller
         break;
       }
-      case 'l':
+      case 'l': //go to angle
       {
-        //go to angle
         //function call to position control module: go to angle
         break;
       }
@@ -154,7 +153,36 @@ int main()
         //function call to utilities module: get_mode()
         break;
       }
-            case 'x': // dummy command for demonstration purposes
+      case 's':
+      {
+        //signal generation
+        double Fs = 8192;
+        float Fn = Fs/2;
+        float wc = .2*Fn;
+        float signal[NUM_SAMPLES] = {};
+        float filterOut[NUM_SAMPLES] = {};
+        int i;
+        for(i=0; i < NUM_SAMPLES; i++){
+            signal[i] = sin(2*M_PI*(.1*Fn)*(i/Fs)) + sin(2*M_PI*(.5*Fn)*(i/Fs));
+        }
+
+        FIRfilter LPfilter;
+        int order = 9; //HARD CODE FILTER ORDER HERE (PREDETERMINED IN MATLAB)
+        float b[MAX_ORDER + 1] = {-.0051,-.0133,.0155,.1630,.3399,
+                                  .3399,.1630,.0155,-.0133,-.0051}; //HARD CODE FILTER COEFFICIENTS HERE (PRECALCULATED IN MATLAB)
+        initFilter(order, b, &LPfilter);
+        for(i=0; i < NUM_SAMPLES; i++){
+            filterOut[i] = filterSignal(signal[i], &LPfilter);
+        }
+        sprintf(buffer, "%d\r\n", NUM_SAMPLES);
+        NU32_WriteUART3(buffer);
+        for(i = 0; i < NUM_SAMPLES; i++){
+            sprintf(buffer, "%f %f\r\n", signal[i], filterOut[i]);
+            NU32_WriteUART3(buffer);
+        }
+        break;
+      }
+      case 'x': // dummy command for demonstration purposes
       {
         int a, b = 0;
         NU32_ReadUART3(buffer,BUF_SIZE);

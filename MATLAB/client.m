@@ -43,7 +43,8 @@ while ~has_quit
         'm: Load step trajectory                n: Load cubic trajectory\n'...
         'o: Execute Trajectory                  p: Unpower the motor\n'...
         'q: Quit                                r: Get mode\n'...
-        'z: Dummy Command                       x: Add\n']);
+        's: Test FIR Filter                     x: Add\n'...
+        'z: Dummy Command\n']);
     
     % read the user's choice
     selection = input('\nENTER COMMAND: ', 's');
@@ -59,7 +60,7 @@ while ~has_quit
             fprintf('The motor current is %d ADC counts.\n',n);
         case 'b'
             n = fscanf(mySerial, '%d');
-            fprintf('The motor current is %d mAn',n);
+            fprintf('The motor current is %d mA\n',n);
         case 'c'
             n = fscanf(mySerial, '%d');
             fprintf('The motor angle is %d counts.\n',n);
@@ -77,30 +78,29 @@ while ~has_quit
                 %!!! currently doesn't display properly
                 fprintf('PWM has been set to %d%% in the counterclockwise direction.\n',n);
             else
-                fprintf('Entered PWM percentage is out of range, try again.\n');
+                fprintf('PWM percentage is out of range, try again.\n');
             end
             %!!!how to handle PWM = 0?
         case 'g'
             n = input('Enter your desired Kp current gain [recommended: 4.76]: ');
             m = input('Enter your desired Ki current gain [recommended: 0.32]: ');
-            %chr = char([n,' ',m,'\n']);
-            str = string({n,m,});
+            str = string({n,m});
             str = join(str);
-            fprintf('Sending Kp = %f and Ki = %f to the current controller.',n,m);
-            fprintf(mySerial,'%s\n',str(1));
+            fprintf('Sending Kp = %f and Ki = %f to the current controller.\n',n,m);
+            fprintf(mySerial,'%s\n',str);
         case 'h'
-            n = fscanf(mySerial,'%s');
-            fprintf('The current controller is using Kp = %f and Ki = %f.', n(1), n(2));
+            n = fscanf(mySerial,'%f'); %!! I dont know how to recieve multiple inputs
+            fprintf('The current controller is using Kp = %f and Ki = %f.\n', n(1), n(2));
         case 'i'
             n = input('Enter your desired Kp current gain [recommended: 4.76]: ');
             m = input('Enter your desired Ki current gain [recommended: 0.32]: ');
             o = input('Enter your desired Kd current gain [recommended: 10.63]: ');
             str = string({n,m,o});
             str = join(str);
-            fprintf('Sending Kp = %f, Ki = %f, and Kd = %f to the current controller.',n,m,o);
+            fprintf('Sending Kp = %f, Ki = %f, and Kd = %f to the current controller.\n',n,m,o);
             fprintf(mySerial,'%s\n',str);
         case 'j'
-            n = fscanf(mySerial,'%s');
+            n = fscanf(mySerial,'%f');
             fprintf('The current controller is using Kp = %f, Ki = %f, and Kd = %f.\n', n(1), n(2)), n(3);
         case 'k'
             %get motor current data from PIC32 then plot it
@@ -162,16 +162,27 @@ while ~has_quit
         case 'q'
             has_quit = true;             % exit client
         case 'r'
-        case 'z'                         % example operation
-            n = input('Enter number: '); % get the number to send
-            fprintf(mySerial, '%d\n',n); % send the number
-            n = fscanf(mySerial,'%d');   % get the incremented number back
-            fprintf('Read: %d\n',n);     % print it to the screen
+        case 's'
+            p = fscanf(mySerial, '%d'); %!!!This is buggy - sometimes doesn't return NUM_SAMPLES
+            signals = zeros(p,2);
+            for i = 1:p
+                signals(i,:) = fscanf(mySerial,'%f');
+            end
+            fprintf('Signals recieved\n');
+            hold on
+            plot(signals(:,1))
+            plot(signals(:,2))
+            hold off
         case 'x'                         % example operation
             p = input('Enter two numbers (separated by a space): ', 's'); % get the number to send
             fprintf(mySerial, '%s\n',p); % send the number
             p = fscanf(mySerial,'%d');   % get the incremented number back
             fprintf('Read: %d\n',p);     % print it to the screen
+        case 'z'                         % example operation
+            n = input('Enter number: '); % get the number to send
+            fprintf(mySerial, '%d\n',n); % send the number
+            n = fscanf(mySerial,'%d');   % get the incremented number back
+            fprintf('Read: %d\n',n);     % print it to the screen
         otherwise
             fprintf('Invalid Selection %c\n', selection);
     end

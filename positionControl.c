@@ -1,6 +1,8 @@
 #include "positionControl.h"
 
-void init(){
+static positionGains posGains;
+
+void initPositionControl(){
 
 }
 
@@ -8,10 +10,10 @@ void loadTrajectory(){
     
 }
 
-void setPositionGains(){
-
+void setPositionGains(positionGains gains){
+    posGains = gains;
 }
 
 positionGains getPositionGains(){
-
+    return posGains;
 }

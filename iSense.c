@@ -3,18 +3,18 @@
 #define AMPS_PER_COUNT (3.3/1024) //!! is this correct?
 #define A_TO_MA 1000
 
-void init(){
+void initADC(){
     //initialize ADC
 }
 
 int getADCcount(){
-    int count = 1023;
+    int count = 1023; //dummy variable for testing
     //get value from ADC, write to count
     return count;
 }
 
-int getADCcurrent(){
-    int count = getCount();
+int getCurrentmAmps(){
+    int count = getADCcount();
     return countToMA(count);
 }
 

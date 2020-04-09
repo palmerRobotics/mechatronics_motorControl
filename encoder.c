@@ -1,7 +1,7 @@
 #include "encoder.h"
 
 #define COUNTS_PER_DEGREE 2
-void init(){
+void initEncoder(){
     //initialize encoder
 }
 
@@ -20,6 +20,6 @@ int countToDegrees(int count){
     return count/COUNTS_PER_DEGREE;
 }
 
-void reset(){
-    
+void resetEncoder(){
+    return;
 }

@@ -7,9 +7,9 @@ typedef struct{
     float kd;
 } positionGains;
 
-void init();
+void initPositionControl();
 void loadTrajectory();
-void setPositionGains();
+void setPositionGains(positionGains gains);
 positionGains getPositionGains();
 
 #endif

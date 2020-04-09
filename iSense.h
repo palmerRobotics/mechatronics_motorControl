@@ -1,8 +1,8 @@
 #ifndef ISENSE__H__
 #define ISENSE__H__
 
-void init();
+void initADC();
 int getADCcount();
-int getADCcurrent();
+int getCurrentmAmps();
 
 #endif

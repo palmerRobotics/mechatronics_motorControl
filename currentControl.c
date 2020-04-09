@@ -1,6 +1,8 @@
 #include "currentControl.h"
 
-void init(){
+static currentGains iGains;
+
+void initIcontrol(){
 
 }
 
@@ -11,9 +13,9 @@ void setFixedPWM(int dutyCycle){
 void setCurrent(){
 
 }
-void setCurrentGains(currentGains gains){
-    currentGains gains = gains; //this is incorrect. scope needs to be bigger
+void setCurrentGains(currentGains input){
+    iGains = input;
 }
 currentGains getCurrentGains(){
-
+    return iGains;
 }

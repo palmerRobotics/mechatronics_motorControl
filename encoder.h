@@ -1,9 +1,9 @@
 #ifndef ENCODER__H__
 #define ENCODER__H__
 
-void initEncoder(); //!!is there going to be namespace conflicts?
+void initEncoder();
 int getEncoderCount();
-int getEncoderDegrees();
+float getEncoderDegrees();
 void resetEncoder();
 
 #endif

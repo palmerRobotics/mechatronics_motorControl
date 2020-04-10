@@ -65,8 +65,8 @@ while ~has_quit
             n = fscanf(mySerial, '%d');
             fprintf('The motor angle is %d counts.\n',n);
         case 'd'
-            n = fscanf(mySerial, '%f');
-            fprintf('The motor angle is %f degrees.\n',n); %!!!may want to change data type/decimal points
+            n = fscanf(mySerial, '%d'); %consider changing to float instead of int
+            fprintf('The motor angle is %d degrees.\n',n);
         case 'e'
             %computation will be handled by .c. May change to return motor angle in degrees
         case 'f'

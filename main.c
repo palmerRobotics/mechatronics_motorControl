@@ -20,9 +20,11 @@ int main()
   __builtin_disable_interrupts();
   // in future, initialize modules or peripherals here
   __builtin_enable_interrupts();
-
+  initEncoder();
   while(1)
   {
+    //sprintf(buffer, "Enter a command:\r\n"); //COMMENT WHEN USING MATLAB
+    //NU32_WriteUART3(buffer);                 //COMMENT WHEN USING MATLAB
     NU32_ReadUART3(buffer,BUF_SIZE); // we expect the next character to be a menu command
     NU32_LED2 = 1;                   // clear the error LED
     switch (buffer[0]) {
@@ -40,29 +42,22 @@ int main()
         NU32_WriteUART3(buffer);
         break;
       }
-      case 'c':
+      case 'c': //get encoder counts
       {
-        //read encoder counts and return value
-        //function call to encoder module: read counts
-        int n = 1023;
+        int n = getEncoderCount();
         sprintf(buffer,"%d\r\n",n);
         NU32_WriteUART3(buffer);
         break;
       }
-      case 'd':
+      case 'd': //get encoder position in degrees
       {
-        //read encoder counts and return value
-        //function call to encoder module: read counts
-        //function call to encoder module: covert counts to deg
-        int n = 360;
+        int n = getEncoderDegrees(); //consider changing to a float
         sprintf(buffer,"%d\r\n",n);
         NU32_WriteUART3(buffer);
         break;
       }
-      case 'e':
+      case 'e': //set current angle as the zero position
       {
-        //set theta=0 to the encoder's current count
-        //function call to encoder module: reset encoder
         resetEncoder();
         break;
       }

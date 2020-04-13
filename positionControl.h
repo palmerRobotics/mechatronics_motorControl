@@ -8,7 +8,6 @@ typedef struct{
 } positionGains;
 
 void initPositionControl();
-void loadTrajectory();
 void setPositionGains(positionGains gains);
 positionGains getPositionGains();
 

@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"nu32.h": "c",
+			"xc.h": "c",
+			"xc-pic32m.h": "c",
+			"p32mx795f512h.h": "c",
+			"xcomplex": "c",
+			"math.h": "c",
+			"ios": "c",
+			"*.tcc": "c",
+			"isense.h": "c",
+			"fir.h": "c",
+			"ccomplex": "c",
+			"cmath": "c",
+			"complex": "c",
+			"algorithm": "c",
+			"bitset": "c",
+			"chrono": "c",
+			"xtree": "c",
+			"xhash": "c"
+		}
+	}
+}

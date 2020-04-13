@@ -31,7 +31,7 @@ static int encoder_command(int read) { // send a command to the encoder chip
     return SPI4BUF;
 }
 
-float countToDegrees(int count){
+int countToDegrees(int count){
     return ((count - ZERO_POSITION_COUNT)*360)/COUNTS_PER_ROTATION;
 }
 
@@ -40,7 +40,7 @@ int getEncoderCount(){
     return encoder_command(1);
 }
 
-float getEncoderDegrees(){
+int getEncoderDegrees(){
     return countToDegrees(getEncoderCount());
 }
 

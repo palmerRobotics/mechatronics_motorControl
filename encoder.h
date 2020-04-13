@@ -3,7 +3,7 @@
 
 void initEncoder();
 int getEncoderCount();
-float getEncoderDegrees();
+int getEncoderDegrees();
 void resetEncoder();
 
 #endif

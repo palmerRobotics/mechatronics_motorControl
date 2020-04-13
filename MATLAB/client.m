@@ -55,43 +55,41 @@ while ~has_quit
     % take the appropriate action
     switch selection
         case 'a'
-            %!!! MATLAB is freezing on fscanf
             n = fscanf(mySerial, '%d');
             fprintf('The motor current is %d ADC counts.\n',n);
         case 'b'
             n = fscanf(mySerial, '%d');
             fprintf('The motor current is %d mA\n',n);
-        case 'c'
+        case 'c' %COMPLETE
             n = fscanf(mySerial, '%d');
             fprintf('The motor angle is %d counts.\n',n);
-        case 'd'
+        case 'd'%COMPLETE
             n = fscanf(mySerial, '%d'); %consider changing to float instead of int
             fprintf('The motor angle is %d degrees.\n',n);
-        case 'e'
+        case 'e' %COMPLETE
             %computation will be handled by .c. May change to return motor angle in degrees
         case 'f'
             n = input('What PWM percentage would you like [-100 100]? ');
             fprintf(mySerial,'%d\n',n);
             if n < 0 && n >= -100
+                %!!! currently doesn't display properly
                 fprintf('PWM has been set to %d%% in the clockwise direction.\n',n);
             elseif n >= 0 && n <= 100
-                %!!! currently doesn't display properly
                 fprintf('PWM has been set to %d%% in the counterclockwise direction.\n',n);
             else
                 fprintf('PWM percentage is out of range, try again.\n');
             end
-            %!!!how to handle PWM = 0?
-        case 'g'
+        case 'g' %COMPLETE
             n = input('Enter your desired Kp current gain [recommended: 4.76]: ');
             m = input('Enter your desired Ki current gain [recommended: 0.32]: ');
             str = string({n,m});
             str = join(str);
             fprintf('Sending Kp = %f and Ki = %f to the current controller.\n',n,m);
             fprintf(mySerial,'%s\n',str);
-        case 'h'
-            n = fscanf(mySerial,'%f'); %!! I dont know how to recieve multiple inputs
+        case 'h' %COMPLETE
+            n = fscanf(mySerial,'%f');
             fprintf('The current controller is using Kp = %f and Ki = %f.\n', n(1), n(2));
-        case 'i'
+        case 'i' %COMPLETE
             n = input('Enter your desired Kp current gain [recommended: 4.76]: ');
             m = input('Enter your desired Ki current gain [recommended: 0.32]: ');
             o = input('Enter your desired Kd current gain [recommended: 10.63]: ');
@@ -99,16 +97,16 @@ while ~has_quit
             str = join(str);
             fprintf('Sending Kp = %f, Ki = %f, and Kd = %f to the current controller.\n',n,m,o);
             fprintf(mySerial,'%s\n',str);
-        case 'j'
+        case 'j' %COMPLETE
             n = fscanf(mySerial,'%f');
-            fprintf('The current controller is using Kp = %f, Ki = %f, and Kd = %f.\n', n(1), n(2)), n(3);
+            fprintf('The current controller is using Kp = %f, Ki = %f, and Kd = %f.\n', n(1), n(2), n(3));
         case 'k'
             %get motor current data from PIC32 then plot it
         case 'l'
             n = input('Enter the desired motor angle in degrees: ');
             fprintf(mySerial,'%d',n);
             fprintf('Motor moving to %d degrees.\n',n);
-        case 'm'
+        case 'm' %COMPLETE
             n = input('Enter step trajectory as an nx2 array, in seconds and degrees [time1, ang1; time2, ang2; ...]: ');
             t = 0;
             valid = true;
@@ -120,18 +118,21 @@ while ~has_quit
             end
             if valid
                 fprintf('Plotting the desired trajectory and sending to the PIC32... ');
-                ref = genRef(n,'step');
-                fprintf(mySerial,'%d',ref);%!!!probably not %d format %!!!Also need to know max buffer size for PIC32
-                n = scanf(mySerial,'%d');
-                if n == 1
-                    fprintf('completed.\n');
-                else
-                    fprintf('Error during transmission.\n');
+                ref = genRef(n,'step'); %!!genRef does not start from 0. Ex: [1,45; 2,90] will start at 45 @ t=0
+                m = length(ref);
+                fprintf(mySerial, '%d\n', m);
+                for i = 1:m
+                    fprintf(mySerial, '%f\n', ref(i));
                 end
+                fprintf('completed.\n')
+%                 trajectory = zeros(1,m); %uncomment for debugging
+%                 for i = 1:m
+%                     trajectory(:,i) = fscanf(mySerial, '%f');
+%                 end
             else
                 fprintf('Error: Maximum trajectory time is 10 seconds.\n');
             end
-        case 'n'
+        case 'n' %COMPLETE
             n = input('Enter step trajectory as an nx2 array, in seconds and degrees [time1, ang1; time2, ang2; ...]: ');
             t = 0;
             valid = true;
@@ -143,26 +144,28 @@ while ~has_quit
             end
             if valid
                 fprintf('Plotting the desired trajectory and sending to the PIC32... ');
-                ref = genRef(n,'cubic');
-                fprintf(mySerial,'%d',ref);%!!!probably not %d format %!!!Also need to know max buffer size for PIC32
-                n = scanf(mySerial,'%d');
-                if n == 1
-                    fprintf('completed.\n');
-                else
-                    fprintf('Error during transmission.\n');
+                ref = genRef(n,'cubic'); %!!genRef does not start from 0. Ex: [1,45; 2,90] will start at 45 @ t=0
+                m = length(ref);
+                fprintf(mySerial, '%d\n', m);
+                for i = 1:m
+                    fprintf(mySerial, '%f\n', ref(i));
                 end
+                fprintf('completed.\n')
+%                 trajectory = zeros(1,m); %uncomment for debugging
+%                 for i = 1:m
+%                     trajectory(:,i) = fscanf(mySerial, '%f');
+%                 end
             else
                 fprintf('Error: Maximum trajectory time is 10 seconds.\n');
             end
         case 'o'
-            %do nothing. PIC will do computations. should probably remove
-            %case statement
-        case 'p'
+            %do nothing. PIC will do computations. should probably remove case statement
+        case 'p' %COMPLETE
             %do nothing. PIC will do computations
-        case 'q'
-            has_quit = true;             % exit client
+        case 'q' %COMPLETE
+            has_quit = true;
         case 'r'
-        case 's'
+        case 's' %COMPLETE
             p = fscanf(mySerial, '%d'); %!!!This is buggy - sometimes doesn't return NUM_SAMPLES
             signals = zeros(p,2);
             for i = 1:p

@@ -6,9 +6,6 @@ void initPositionControl(){
 
 }
 
-void loadTrajectory(){
-    
-}
 
 void setPositionGains(positionGains gains){
     posGains = gains;

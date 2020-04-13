@@ -21,6 +21,7 @@ int main()
   // in future, initialize modules or peripherals here
   __builtin_enable_interrupts();
   initEncoder();
+  opMode_t opMode;
   while(1)
   {
     //sprintf(buffer, "Enter a command:\r\n"); //COMMENT WHEN USING MATLAB
@@ -42,32 +43,31 @@ int main()
         NU32_WriteUART3(buffer);
         break;
       }
-      case 'c': //get encoder counts
+      case 'c': //get encoder counts    COMPLETE
       {
         int n = getEncoderCount();
         sprintf(buffer,"%d\r\n",n);
         NU32_WriteUART3(buffer);
         break;
       }
-      case 'd': //get encoder position in degrees
+      case 'd': //get encoder position in degrees   COMPLETE
       {
         int n = getEncoderDegrees(); //consider changing to a float
         sprintf(buffer,"%d\r\n",n);
         NU32_WriteUART3(buffer);
         break;
       }
-      case 'e': //set current angle as the zero position
+      case 'e': //set current angle as zero position    COMPLETE
       {
         resetEncoder();
         break;
       }
-      case 'f':
+      case 'f': //set PWM duty cycle
       {
-        //set PWM duty cycle
         //function call to current control module: set fixed PWM
         break;
       }
-      case 'g': //set current gains
+      case 'g': //set current gains   COMPLETE
       {
         currentGains gains;
         NU32_ReadUART3(buffer,BUF_SIZE);
@@ -75,14 +75,14 @@ int main()
         setCurrentGains(gains);
         break;
       }
-      case 'h': //get current gains
+      case 'h': //get current gains   COMPLETE
       {
         currentGains gains = getCurrentGains();
         sprintf(buffer,"%f %f\r\n", gains.kp, gains.ki);
         NU32_WriteUART3(buffer);
         break;
       }
-      case 'i': //set position gains
+      case 'i': //set position gains    COMPLETE
       {
         positionGains gains;
         NU32_ReadUART3(buffer, BUF_SIZE);
@@ -90,7 +90,7 @@ int main()
         setPositionGains(gains);
         break;
       }
-      case 'j': //get position gains
+      case 'j': //get position gains    COMPLETE
       {
         positionGains gains = getPositionGains();
         sprintf(buffer,"%f %f %f\r\n", gains.kp, gains.ki, gains.kd);
@@ -104,51 +104,65 @@ int main()
       }
       case 'l': //go to angle
       {
+        //set operating mode
         //function call to position control module: go to angle
         break;
       }
-      case 'm':
+      case 'm': //load step trajectory    COMPLETE
       {
-        //load step trajectory
-        //function call to position control module: load trajectory
-        int n = 1;
-        sprintf(buffer,"%d\r\n",n);
-        NU32_WriteUART3(buffer);
+        int i, n = 0;
+        float trajectory[MAX_SAMPLES] = {};
+        NU32_ReadUART3(buffer, BUF_SIZE);
+        sscanf(buffer, "%d", &n);
+        loadTrajectory(trajectory, n);
+        /* //uncomment for debugging
+        for(i=0; i < n; i++){
+          sprintf(buffer, "%f\r\n", trajectory[i]);
+          NU32_WriteUART3(buffer);
+        }
+        */
         break;
       }
-      case 'n':
+      case 'n': //load cubic trajectory   COMPLETE
       {
-        //load cubic trajectory
-        //function call to position control module: load trajectory
-        int n = 1;
-        sprintf(buffer,"%d\r\n",n);
-        NU32_WriteUART3(buffer);
+        int i, n = 0;
+        float trajectory[MAX_SAMPLES] = {};
+        NU32_ReadUART3(buffer, BUF_SIZE);
+        sscanf(buffer, "%d", &n);
+        loadTrajectory(trajectory, n);
+        /* //uncomment for debugging
+        for(i=0; i < n; i++){
+          sprintf(buffer, "%f\r\n", trajectory[i]);
+          NU32_WriteUART3(buffer);
+        }
+        */
         break;
       }
-      case 'o':
+      case 'o': //execute trajectory
       {
-        //execute trajectory
         //function call to position control module: execute trajectory
         break;
       }
-      case 'p':
+      case 'p': //set PIC to IDLE mode    COMPLETE
       {
-        //set PIC to IDLE mode
-        //function call to utilities module
+        setMode(&opMode, Idle);
         break;
       }
-      case 'q':
+      case 'q': //quit    COMPLETE
       {
+        setMode(&opMode, Idle);
         // handle q for quit. Later you may want to return to IDLE mode here. 
         break;
       }
-      case 'r':
+      case 'r': //get operating mode
       {
-        //get current operating mode
-        //function call to utilities module: get_mode()
+        setMode(&opMode, PWM); //for debugging purposes. Will be set by other functions in final implementation
+        int n = getMode(&opMode);
+        sprintf(buffer, "current operating mode is: %d\r\n", n);
+        NU32_WriteUART3(buffer);
         break;
       }
-      case 's':
+      case 's': //test FIR filter
       {
         //signal generation
         double Fs = 8192;

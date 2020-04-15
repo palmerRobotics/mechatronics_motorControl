@@ -5,10 +5,10 @@ typedef struct{
     float kp;
     float ki;
     float kd;
-} positionGains;
+} positionGains_t;
 
 void initPositionControl();
-void setPositionGains(positionGains gains);
-positionGains getPositionGains();
+void setPositionGains(positionGains_t gains);
+positionGains_t getPositionGains();
 
 #endif

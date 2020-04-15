@@ -1,16 +1,16 @@
 #include "positionControl.h"
 
-static positionGains posGains;
+static positionGains_t posGains;
 
 void initPositionControl(){
 
 }
 
 
-void setPositionGains(positionGains gains){
+void setPositionGains(positionGains_t gains){
     posGains = gains;
 }
 
-positionGains getPositionGains(){
+positionGains_t getPositionGains(){
     return posGains;
 }

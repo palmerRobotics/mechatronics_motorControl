@@ -20,6 +20,7 @@ int main()
   __builtin_disable_interrupts();
   // in future, initialize modules or peripherals here
   __builtin_enable_interrupts();
+  initADC();
   initEncoder();
   opMode_t opMode;
   while(1)
@@ -69,30 +70,30 @@ int main()
       }
       case 'g': //set current gains   COMPLETE
       {
-        currentGains gains;
-        NU32_ReadUART3(buffer,BUF_SIZE);
-        sscanf(buffer, "%f %f", &gains.kp, &gains.ki);
-        setCurrentGains(gains);
+        currentGains_t iGains;
+        NU32_ReadUART3(buffer, BUF_SIZE);
+        sscanf(buffer, "%f %f", &iGains.kp, &iGains.ki);
+        setCurrentGains(iGains);
         break;
       }
       case 'h': //get current gains   COMPLETE
       {
-        currentGains gains = getCurrentGains();
+        currentGains_t gains = getCurrentGains();
         sprintf(buffer,"%f %f\r\n", gains.kp, gains.ki);
         NU32_WriteUART3(buffer);
         break;
       }
       case 'i': //set position gains    COMPLETE
       {
-        positionGains gains;
+        positionGains_t posGains;
         NU32_ReadUART3(buffer, BUF_SIZE);
-        sscanf(buffer, "%f %f %f", &gains.kp, &gains.ki, &gains.kd);
-        setPositionGains(gains);
+        sscanf(buffer, "%f %f %f", &posGains.kp, &posGains.ki, &posGains.kd);
+        setPositionGains(posGains);
         break;
       }
       case 'j': //get position gains    COMPLETE
       {
-        positionGains gains = getPositionGains();
+        positionGains_t gains = getPositionGains();
         sprintf(buffer,"%f %f %f\r\n", gains.kp, gains.ki, gains.kd);
         NU32_WriteUART3(buffer);
         break;

@@ -4,8 +4,6 @@
 #define COUNTS_PER_ROTATION 4735
 #define ZERO_POSITION_COUNT 32768
 
-static char buffer[200] = {};
-
 void initEncoder(){ // SPI initialization for reading from the decoder chip
     SPI4CON = 0;              // stop and reset SPI4
     SPI4BUF;                  // read to clear the rx receive buffer

@@ -1,6 +1,6 @@
 #include "currentControl.h"
 
-static currentGains iGains;
+static currentGains_t iGains;
 
 void initIcontrol(){
 
@@ -13,9 +13,9 @@ void setFixedPWM(int dutyCycle){
 void setCurrent(){
 
 }
-void setCurrentGains(currentGains input){
-    iGains = input;
+void setCurrentGains(currentGains_t gains){
+    iGains = gains;
 }
-currentGains getCurrentGains(){
+currentGains_t getCurrentGains(){
     return iGains;
 }

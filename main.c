@@ -22,6 +22,7 @@ int main()
   __builtin_enable_interrupts();
   initADC();
   initEncoder();
+  initIcontrol();
   opMode_t opMode;
   while(1)
   {
@@ -155,7 +156,7 @@ int main()
         // handle q for quit. Later you may want to return to IDLE mode here. 
         break;
       }
-      case 'r': //get operating mode
+      case 'r': //get operating mode    COMPLETE
       {
         setMode(&opMode, PWM); //for debugging purposes. Will be set by other functions in final implementation
         int n = getMode(&opMode);

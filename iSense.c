@@ -1,11 +1,9 @@
 #include "iSense.h"
 #include "stdio.h"
-#include <xc.h> //!!!DOUBLE INCLUDE?
+#include <xc.h>
 
 #define MAMPS_PER_COUNT 3.4
 #define ZERO_CURRENT_COUNT 502
-#define BUF_SIZE 200
-static char buf[BUF_SIZE];
 
 void initADC(){
     AD1PCFGbits.PCFG9 = 0;       // B9 is an adc pin

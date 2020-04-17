@@ -23,7 +23,7 @@ int main()
   initADC();
   initEncoder();
   initIcontrol();
-  opMode_t opMode;
+  opMode_t opMode;  //DO NOT PASS BY REFERENCE. OPMODE SHOULD BE A STATIC VARIABLE IN UTILITIES
   while(1)
   {
     //sprintf(buffer, "Enter a command:\r\n"); //COMMENT WHEN USING MATLAB
@@ -66,6 +66,15 @@ int main()
       }
       case 'f': //set PWM duty cycle
       {
+        int dutyCycle;
+        setMode(PWM);
+        sprintf(buffer, "Enter a duty cycle percentage\r\n");
+        NU32_WriteUART3(buffer);
+        NU32_ReadUART3(buffer, BUF_SIZE);
+        sscanf(buffer, "%d", &dutyCycle);
+        sprintf(buffer, "Entered duty cycle: %d\r\n", dutyCycle);
+        NU32_WriteUART3(buffer);
+        setPWM(dutyCycle);
         //function call to current control module: set fixed PWM
         break;
       }
@@ -101,19 +110,22 @@ int main()
       }
       case 'k': //test current controller
       {
+        setMode(ITEST);
+        //set operation mode to ITEST
         //function call to current control module: test current controller
         break;
       }
       case 'l': //go to angle
       {
-        //set operating mode
+        setMode(HOLD);
+        //set operating mode to HOLD??
         //function call to position control module: go to angle
         break;
       }
-      case 'm': //load step trajectory    COMPLETE
+      case 'm': //load step trajectory    //trajectory should be stored in utilities.c, not in main
       {
         int i, n = 0;
-        float trajectory[MAX_SAMPLES] = {};
+        float trajectory[MAX_SAMPLES] = {}; //!!!trajectory shoul be stored in utilities
         NU32_ReadUART3(buffer, BUF_SIZE);
         sscanf(buffer, "%d", &n);
         loadTrajectory(trajectory, n);
@@ -125,7 +137,7 @@ int main()
         */
         break;
       }
-      case 'n': //load cubic trajectory   COMPLETE
+      case 'n': //load cubic trajectory    //trajectory should be stored in utilities.c, not in main
       {
         int i, n = 0;
         float trajectory[MAX_SAMPLES] = {};
@@ -142,24 +154,23 @@ int main()
       }
       case 'o': //execute trajectory
       {
+        setMode(TRACK);
         //function call to position control module: execute trajectory
         break;
       }
       case 'p': //set PIC to IDLE mode    COMPLETE
       {
-        setMode(&opMode, Idle);
+        setMode(IDLE);
         break;
       }
       case 'q': //quit    COMPLETE
       {
-        setMode(&opMode, Idle);
-        // handle q for quit. Later you may want to return to IDLE mode here. 
+        setMode(IDLE);
         break;
       }
       case 'r': //get operating mode    COMPLETE
       {
-        setMode(&opMode, PWM); //for debugging purposes. Will be set by other functions in final implementation
-        int n = getMode(&opMode);
+        int n = getMode();
         sprintf(buffer, "current operating mode is: %d\r\n", n);
         NU32_WriteUART3(buffer);
         break;

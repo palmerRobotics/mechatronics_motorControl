@@ -4,10 +4,10 @@
 #include "stdio.h"
 #define MAX_SAMPLES 2000
 
-typedef enum {Idle, PWM, iTest, Hold, Track} opMode_t ;
+typedef enum {IDLE, PWM, ITEST, HOLD, TRACK} opMode_t ;
 static desiredTrajectory[MAX_SAMPLES] = {};
 
-void setMode(opMode_t* modep, int desiredMode);
-int getMode(opMode_t* modep);///I don't understand the point of this function...
+void setMode(int desiredMode);
+int getMode();
 void loadTrajectory(float trajectory[], int n);
 #endif

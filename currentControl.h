@@ -7,7 +7,7 @@ typedef struct {
 } currentGains_t; //!!do I want this struct to be visible outside currentControl.h?
 
 void initIcontrol();
-void setFixedPWM(int dutyCycle);
+void setPWM(int dutyCycle);
 void setCurrent(); //unsure of functionality
 void setCurrentGains(currentGains_t gains);
 currentGains_t getCurrentGains(); 

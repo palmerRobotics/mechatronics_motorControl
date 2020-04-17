@@ -2,16 +2,18 @@
 
 #define BUF_SIZE 200
 
-void setMode(opMode_t* modep, int desiredMode){
-    *modep = desiredMode;
+static opMode_t opMode;
+
+void setMode(int desiredMode){
+    opMode = desiredMode;
     return;
 }
 
-int getMode(opMode_t* modep){
-    return *modep; //this seems weird
+int getMode(){
+    return opMode; //this seems weird
 }
 
-void loadTrajectory(float trajectory[], int n){ //should I pass buf_size as an argument?
+void loadTrajectory(float trajectory[], int n){//should trajectory be stored in utilities or main?
         int i;
         char buffer[BUF_SIZE];
         for(i = 0; i < n; i++){

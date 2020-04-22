@@ -12,7 +12,7 @@ void initFilter(int order, float b[], FIRfilter *filterp){
     return;
 }
 
-void updateInputs(double sample, FIRfilter *filterp){
+void updateInputs(float sample, FIRfilter *filterp){
     int i;
     for(i=(filterp->order); i > 0; i--){
         filterp->inputs[i] = filterp->inputs[i-1];
@@ -20,12 +20,19 @@ void updateInputs(double sample, FIRfilter *filterp){
     filterp->inputs[0] = sample;
 }
 
-double filterSignal(double sample, FIRfilter *filterp){
+float filterSignal(float sample, FIRfilter *filterp){
     updateInputs(sample, filterp);
-    double result = 0;
+    float result = 0;
     int i;
     for(i=0; i < (filterp->order + 1); i++){
         result += filterp->b[i] * filterp->inputs[i];
     }
     return result;
+}
+
+void resetFilter(int order, FIRfilter *filterp){
+  int i;
+    for(i=0; i < (filterp->order + 1); i++){
+        filterp->inputs[i] = 0;
+    }
 }

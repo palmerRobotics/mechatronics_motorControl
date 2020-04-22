@@ -23,7 +23,7 @@ int main()
   initADC();
   initEncoder();
   initIcontrol();
-  opMode_t opMode;  //DO NOT PASS BY REFERENCE. OPMODE SHOULD BE A STATIC VARIABLE IN UTILITIES
+  opMode_t opMode;  //!!!!DO NOT PASS BY REFERENCE. OPMODE SHOULD BE A STATIC VARIABLE IN UTILITIES!!!!
   while(1)
   {
     //sprintf(buffer, "Enter a command:\r\n"); //COMMENT WHEN USING MATLAB
@@ -40,8 +40,8 @@ int main()
       }
       case 'b': //get current in mA
       {
-        int mA = getCurrentmAmps();
-        sprintf(buffer,"%d\r\n",mA);
+        float mA = getCurrentmAmps();
+        sprintf(buffer,"%f\r\n",mA);
         NU32_WriteUART3(buffer);
         break;
       }
@@ -66,14 +66,12 @@ int main()
       }
       case 'f': //set PWM duty cycle
       {
+        //sprintf(buffer, "In case f\r\n");
+        //NU32_WriteUART3(buffer);
         int dutyCycle;
-        setMode(PWM);
-        sprintf(buffer, "Enter a duty cycle percentage\r\n");
-        NU32_WriteUART3(buffer);
         NU32_ReadUART3(buffer, BUF_SIZE);
         sscanf(buffer, "%d", &dutyCycle);
-        sprintf(buffer, "Entered duty cycle: %d\r\n", dutyCycle);
-        NU32_WriteUART3(buffer);
+        setMode(PWM);
         setPWM(dutyCycle);
         //function call to current control module: set fixed PWM
         break;
@@ -171,7 +169,7 @@ int main()
       case 'r': //get operating mode    COMPLETE
       {
         int n = getMode();
-        sprintf(buffer, "current operating mode is: %d\r\n", n);
+        sprintf(buffer, "%d\r\n", n);
         NU32_WriteUART3(buffer);
         break;
       }
@@ -188,13 +186,13 @@ int main()
             signal[i] = sin(2*M_PI*(.1*Fn)*(i/Fs)) + sin(2*M_PI*(.5*Fn)*(i/Fs));
         }
 
-        FIRfilter LPfilter;
+        FIRfilter testFilter;
         int order = 9; //HARD CODE FILTER ORDER HERE (PREDETERMINED IN MATLAB)
         float b[MAX_ORDER + 1] = {-.0051,-.0133,.0155,.1630,.3399,
                                   .3399,.1630,.0155,-.0133,-.0051}; //HARD CODE FILTER COEFFICIENTS HERE (PRECALCULATED IN MATLAB)
-        initFilter(order, b, &LPfilter);
+        initFilter(order, b, &testFilter);
         for(i=0; i < NUM_SAMPLES; i++){
-            filterOut[i] = filterSignal(signal[i], &LPfilter);
+            filterOut[i] = filterSignal(signal[i], &testFilter);
         }
         sprintf(buffer, "%d\r\n", NUM_SAMPLES);
         NU32_WriteUART3(buffer);

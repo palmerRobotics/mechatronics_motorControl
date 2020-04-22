@@ -11,5 +11,6 @@ void setPWM(int dutyCycle);
 void setCurrent(); //unsure of functionality
 void setCurrentGains(currentGains_t gains);
 currentGains_t getCurrentGains(); 
+void sendCurrentData();
 
 #endif

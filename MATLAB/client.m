@@ -1,4 +1,4 @@
-function client(port)
+function client()
 %   provides a menu for accessing PIC32 motor control functions
 %
 %   client(port)
@@ -18,7 +18,7 @@ if ~isempty(instrfind)
     fclose(instrfind);
     delete(instrfind);
 end
-
+port = 'COM4'
 fprintf('Opening port %s....\n',port);
 
 % settings for opening the serial port. baud rate 230400, hardware flow control
@@ -58,8 +58,8 @@ while ~has_quit
             n = fscanf(mySerial, '%d');
             fprintf('The motor current is %d ADC counts.\n',n);
         case 'b'
-            n = fscanf(mySerial, '%d');
-            fprintf('The motor current is %d mA\n',n);
+            n = fscanf(mySerial, '%f');
+            fprintf('The motor current is %f mA\n',n);
         case 'c' %COMPLETE
             n = fscanf(mySerial, '%d');
             fprintf('The motor angle is %d counts.\n',n);
@@ -101,7 +101,21 @@ while ~has_quit
             n = fscanf(mySerial,'%f');
             fprintf('The current controller is using Kp = %f, Ki = %f, and Kd = %f.\n', n(1), n(2), n(3));
         case 'k'
-            %get motor current data from PIC32 then plot it
+            close all
+            p = fscanf(mySerial, '%d'); %!!!This is buggy - sometimes doesn't return NUM_SAMPLES
+            signals = zeros(p,3);
+            for i = 1:p
+                signals(i,:) = fscanf(mySerial,'%f');
+            end
+            fprintf('Plotting Current\n');
+            hold on
+            plot(signals(:,1))
+            %plot(signals(:,2), '-o')
+            stairs(signals(:,2))
+            stairs(signals(:,3));
+            yline(0, '--');
+            legend('Iref', 'iMeasured', 'PWM%');
+            hold off
         case 'l'
             n = input('Enter the desired motor angle in degrees: ');
             fprintf(mySerial,'%d',n);

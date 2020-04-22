@@ -3,6 +3,6 @@
 
 void initADC();
 int getADCcount();
-int getCurrentmAmps();
+float getCurrentmAmps();
 
 #endif

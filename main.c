@@ -17,13 +17,10 @@ int main()
   NU32_Startup(); // cache on, min flash wait, interrupts on, LED/button init, UART init
   NU32_LED1 = 1;  // turn off the LEDs
   NU32_LED2 = 1;
-  __builtin_disable_interrupts();
-  // in future, initialize modules or peripherals here
-  __builtin_enable_interrupts();
   initADC();
   initEncoder();
   initIcontrol();
-  opMode_t opMode;  //!!!!DO NOT PASS BY REFERENCE. OPMODE SHOULD BE A STATIC VARIABLE IN UTILITIES!!!!
+  initPositionControl();
   while(1)
   {
     //sprintf(buffer, "Enter a command:\r\n"); //COMMENT WHEN USING MATLAB
@@ -54,8 +51,8 @@ int main()
       }
       case 'd': //get encoder position in degrees   COMPLETE
       {
-        int n = getEncoderDegrees(); //consider changing to a float
-        sprintf(buffer,"%d\r\n",n);
+        float n = getEncoderDegrees(); //consider changing to a float
+        sprintf(buffer,"%f\r\n",n);
         NU32_WriteUART3(buffer);
         break;
       }
@@ -109,51 +106,31 @@ int main()
       case 'k': //test current controller
       {
         setMode(ITEST);
-        //set operation mode to ITEST
-        //function call to current control module: test current controller
         break;
       }
       case 'l': //go to angle
       {
+        float angle;
+        NU32_ReadUART3(buffer, BUF_SIZE);
+        sscanf(buffer, "%f", &angle);
+        setDesiredAngle(angle);
         setMode(HOLD);
-        //set operating mode to HOLD??
-        //function call to position control module: go to angle
         break;
       }
       case 'm': //load step trajectory    //trajectory should be stored in utilities.c, not in main
       {
-        int i, n = 0;
-        float trajectory[MAX_SAMPLES] = {}; //!!!trajectory shoul be stored in utilities
-        NU32_ReadUART3(buffer, BUF_SIZE);
-        sscanf(buffer, "%d", &n);
-        loadTrajectory(trajectory, n);
-        /* //uncomment for debugging
-        for(i=0; i < n; i++){
-          sprintf(buffer, "%f\r\n", trajectory[i]);
-          NU32_WriteUART3(buffer);
-        }
-        */
+        loadTrajectory();
         break;
       }
       case 'n': //load cubic trajectory    //trajectory should be stored in utilities.c, not in main
       {
-        int i, n = 0;
-        float trajectory[MAX_SAMPLES] = {};
-        NU32_ReadUART3(buffer, BUF_SIZE);
-        sscanf(buffer, "%d", &n);
-        loadTrajectory(trajectory, n);
-        /* //uncomment for debugging
-        for(i=0; i < n; i++){
-          sprintf(buffer, "%f\r\n", trajectory[i]);
-          NU32_WriteUART3(buffer);
-        }
-        */
+        loadTrajectory();
         break;
       }
       case 'o': //execute trajectory
       {
+        resetEncoder();
         setMode(TRACK);
-        //function call to position control module: execute trajectory
         break;
       }
       case 'p': //set PIC to IDLE mode    COMPLETE
@@ -201,6 +178,10 @@ int main()
             NU32_WriteUART3(buffer);
         }
         break;
+      }
+      case 't':
+      {
+        setMode(PWMTEST);
       }
       case 'x': // dummy command for demonstration purposes
       {

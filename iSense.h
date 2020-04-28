@@ -2,7 +2,7 @@
 #define ISENSE__H__
 
 void initADC();
-int getADCcount();
+unsigned int getADCcount();
 float getCurrentmAmps();
 
 #endif

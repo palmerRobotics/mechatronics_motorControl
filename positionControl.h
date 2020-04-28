@@ -9,6 +9,7 @@ typedef struct{
 
 void initPositionControl();
 void setPositionGains(positionGains_t gains);
+void setDesiredAngle(float angle);
 positionGains_t getPositionGains();
 
 #endif

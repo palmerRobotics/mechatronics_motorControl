@@ -64,8 +64,8 @@ while ~has_quit
             n = fscanf(mySerial, '%d');
             fprintf('The motor angle is %d counts.\n',n);
         case 'd'%COMPLETE
-            n = fscanf(mySerial, '%d'); %consider changing to float instead of int
-            fprintf('The motor angle is %d degrees.\n',n);
+            n = fscanf(mySerial, '%f'); %consider changing to float instead of int
+            fprintf('The motor angle is %f degrees.\n',n);
         case 'e' %COMPLETE
             %computation will be handled by .c. May change to return motor angle in degrees
         case 'f'
@@ -80,8 +80,8 @@ while ~has_quit
                 fprintf('PWM percentage is out of range, try again.\n');
             end
         case 'g' %COMPLETE
-            n = input('Enter your desired Kp current gain [recommended: 4.76]: ');
-            m = input('Enter your desired Ki current gain [recommended: 0.32]: ');
+            n = input('Enter your desired Kp current gain [recommended: 0.3]: ');
+            m = input('Enter your desired Ki current gain [recommended: 0.2]: ');
             str = string({n,m});
             str = join(str);
             fprintf('Sending Kp = %f and Ki = %f to the current controller.\n',n,m);
@@ -90,12 +90,12 @@ while ~has_quit
             n = fscanf(mySerial,'%f');
             fprintf('The current controller is using Kp = %f and Ki = %f.\n', n(1), n(2));
         case 'i' %COMPLETE
-            n = input('Enter your desired Kp current gain [recommended: 4.76]: ');
-            m = input('Enter your desired Ki current gain [recommended: 0.32]: ');
-            o = input('Enter your desired Kd current gain [recommended: 10.63]: ');
+            n = input('Enter your desired Kp position gain [recommended: 9]: ');
+            m = input('Enter your desired Ki position gain [recommended: 5]: ');
+            o = input('Enter your desired Kd position gain [recommended: 10]: ');
             str = string({n,m,o});
             str = join(str);
-            fprintf('Sending Kp = %f, Ki = %f, and Kd = %f to the current controller.\n',n,m,o);
+            fprintf('Sending Kp = %f, Ki = %f, and Kd = %f to the position controller.\n',n,m,o);
             fprintf(mySerial,'%s\n',str);
         case 'j' %COMPLETE
             n = fscanf(mySerial,'%f');
@@ -103,23 +103,26 @@ while ~has_quit
         case 'k'
             close all
             p = fscanf(mySerial, '%d'); %!!!This is buggy - sometimes doesn't return NUM_SAMPLES
-            signals = zeros(p,3);
+            signals = zeros(p,5);
             for i = 1:p
                 signals(i,:) = fscanf(mySerial,'%f');
             end
             fprintf('Plotting Current\n');
             hold on
             plot(signals(:,1))
-            %plot(signals(:,2), '-o')
             stairs(signals(:,2))
-            stairs(signals(:,3));
+            stairs(signals(:,3), 'g');
+            %plot(signals(:,4));
+            %plot(signals(:,5));
             yline(0, '--');
-            legend('Iref', 'iMeasured', 'PWM%');
+            legend('Iref (mA)', 'Imeas (mA)', 'u (PWM%)');
+            %legend('Iref (mA)', 'Imeas (mA)', 'u (PWM%)', 'e (mA)');                        %10, 25 when iSat = 50 and iError/20
+            %legend('Iref (mA)', 'Imeas (mA)', 'u (PWM%)', 'e (mA)', 'eInt (mA)');
             hold off
-        case 'l'
+        case 'l'    
             n = input('Enter the desired motor angle in degrees: ');
-            fprintf(mySerial,'%d',n);
-            fprintf('Motor moving to %d degrees.\n',n);
+            fprintf(mySerial,'%f',n);
+            %fprintf('Motor moving to %d degrees.\n',n);
         case 'm' %COMPLETE
             n = input('Enter step trajectory as an nx2 array, in seconds and degrees [time1, ang1; time2, ang2; ...]: ');
             t = 0;
@@ -139,10 +142,10 @@ while ~has_quit
                     fprintf(mySerial, '%f\n', ref(i));
                 end
                 fprintf('completed.\n')
-%                 trajectory = zeros(1,m); %uncomment for debugging
-%                 for i = 1:m
-%                     trajectory(:,i) = fscanf(mySerial, '%f');
-%                 end
+                trajectory = zeros(1,m); %uncomment for debugging
+                for i = 1:m
+                    trajectory(:,i) = fscanf(mySerial, '%f');
+                end
             else
                 fprintf('Error: Maximum trajectory time is 10 seconds.\n');
             end
@@ -165,15 +168,27 @@ while ~has_quit
                     fprintf(mySerial, '%f\n', ref(i));
                 end
                 fprintf('completed.\n')
-%                 trajectory = zeros(1,m); %uncomment for debugging
-%                 for i = 1:m
-%                     trajectory(:,i) = fscanf(mySerial, '%f');
-%                 end
+                trajectory = zeros(1,m); %uncomment for debugging
+                for i = 1:m
+                    trajectory(:,i) = fscanf(mySerial, '%f');
+                end
             else
                 fprintf('Error: Maximum trajectory time is 10 seconds.\n');
             end
         case 'o'
-            %do nothing. PIC will do computations. should probably remove case statement
+            close all
+            p = fscanf(mySerial, '%d'); %!!!This is buggy - sometimes doesn't return NUM_SAMPLES
+            signals = zeros(p,2);
+            for i = 1:p
+                signals(i,:) = fscanf(mySerial,'%f');
+            end
+            fprintf('Plotting Current\n');
+            hold on
+            plot(signals(:,1))
+            plot(signals(:,2))
+            yline(0, '--');
+            legend('thetaRef (deg)', 'thetaAct (deg)');
+            hold off
         case 'p' %COMPLETE
             %do nothing. PIC will do computations
         case 'q' %COMPLETE
@@ -189,6 +204,20 @@ while ~has_quit
             hold on
             plot(signals(:,1))
             plot(signals(:,2))
+            hold off
+        case 't'
+            close all
+            p = fscanf(mySerial, '%d');
+            signals = zeros(p,2);
+            for i = 1:p
+                signals(i,:) = fscanf(mySerial,'%f');
+            end
+            fprintf('Plotting Current\n');
+            hold on
+            plot(signals(:,1))
+            plot(signals(:,2))
+            yline(0, '--');
+            legend('PWM %', 'Imeas (mA)');
             hold off
         case 'x'                         % example operation
             p = input('Enter two numbers (separated by a space): ', 's'); % get the number to send

@@ -2,12 +2,12 @@
 #define UTILITIES__H__
 
 #include "stdio.h"
-#define MAX_SAMPLES 2000
 
-typedef enum {IDLE, PWM, ITEST, HOLD, TRACK} opMode_t ;
-static desiredTrajectory[MAX_SAMPLES] = {};
+typedef enum {IDLE, PWM, ITEST, HOLD, TRACK, PWMTEST} opMode_t ;
 
 void setMode(int desiredMode);
 int getMode();
-void loadTrajectory(float trajectory[], int n);
+void loadTrajectory();
+float getTrajectory(int i);
+int getTrajectoryLength();
 #endif
